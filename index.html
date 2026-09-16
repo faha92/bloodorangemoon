@@ -188,6 +188,157 @@ h1 {
 
 .date { color: #ff5a2c; }
 
+/* MERCH */
+/* only 2 products live right now (hoodie + tote dropped for now) -- widen
+   this back to 1100px when they're back so a 4-up row has room */
+#merch { max-width: 620px; }
+
+.merch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+  gap: 25px;
+}
+
+.product {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid #1d1d1d;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.3s, transform 0.3s;
+}
+
+.product:hover {
+  border-color: rgba(255,90,44,0.45);
+  transform: translateY(-4px);
+}
+
+.product-media {
+  aspect-ratio: 1 / 1;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255,90,44,0.25), transparent 62%),
+    #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.product-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* placeholder glyph — only visible until a real photo is dropped in */
+.product-media i {
+  font-size: 38px;
+  color: rgba(255,90,44,0.45);
+}
+
+.product-body {
+  flex: 1;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.product-name {
+  font-family: 'Shadows Into Light', cursive;
+  font-size: 1.25rem;
+}
+
+.product-desc {
+  flex: 1;
+  color: #888;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.product-price {
+  color: #ff5a2c;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+}
+
+/* SIZE PICKER */
+.sizes {
+  display: flex;
+  gap: 7px;
+  margin-top: 6px;
+}
+
+.size {
+  flex: 1;
+  padding: 9px 0;
+  background: transparent;
+  border: 1px solid #2b2b30;
+  border-radius: 5px;
+  color: #9a9aa0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: 0.18s;
+}
+
+.size:hover:not(:disabled) {
+  border-color: rgba(255,90,44,0.7);
+  color: #eee;
+}
+
+.size[aria-pressed="true"] {
+  background: #ff5a2c;
+  border-color: #ff5a2c;
+  color: #0a0a0a;
+  font-weight: 500;
+}
+
+.size:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+/* BUY */
+.buy {
+  display: block;
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid #f2f2f2;
+  border-radius: 6px;
+  background: #f2f2f2;
+  color: #0a0a0a;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.18s;
+}
+
+.buy:hover { background: #ffffff; border-color: #ffffff; }
+
+.buy[aria-disabled="true"] {
+  background: transparent;
+  border-color: #333;
+  color: #666;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.merch-note {
+  text-align: center;
+  color: #666;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  margin-top: 35px;
+}
+
 /* EMAIL */
 .email {
   font-family: 'Rock Salt', cursive;
@@ -243,6 +394,7 @@ h1 {
       <a href="#bio">About</a>
       <a href="#music">Music</a>
       <a href="#concerts">Concerts</a>
+      <a href="#merch">Merch</a>
       <a href="#contact">Contact</a>
     </div>
 
@@ -257,6 +409,7 @@ h1 {
   <a href="#bio">About</a>
   <a href="#music">Music</a>
   <a href="#concerts">Concerts</a>
+  <a href="#merch">Merch</a>
   <a href="#contact">Contact</a>
 </div>
 
@@ -329,14 +482,87 @@ h1 {
   </div>
 </section>
 
+<!-- MERCH -->
+<section id="merch" class="section">
+  <h2>Merch</h2>
+
+  <!--
+    ============================================================
+    STRIPE SETUP  —  paste a Payment Link URL into each data-url
+    ============================================================
+    Per product, in the Stripe Dashboard:
+      1. Products      -> add the product + price.
+      2. Payment Links -> create a link, and in the editor turn on:
+           - "Collect customer addresses" -> Billing and shipping
+             (pick the countries you ship to, and add shipping rates)
+           - "Let customers adjust quantity"
+      3. Copy the https://buy.stripe.com/... URL.
+
+    APPAREL: make ONE link per size and paste each into that size's
+    data-url. That way the size is a real line item (not a note), and
+    "Limit the number of payments" on a link gives you per-size stock
+    -- when M sells out, only M goes grey.
+        <button ... data-url="https://buy.stripe.com/xxxx">M</button>
+
+    EVERYTHING ELSE: paste the single URL into the <a class="buy"> tag.
+        <a class="buy" data-url="https://buy.stripe.com/xxxx">Coming soon</a>
+
+    A size with an empty data-url renders as sold out; a product with no
+    URLs at all renders as "Coming soon". No API keys belong in this file.
+    ============================================================
+  -->
+
+  <div class="merch-grid">
+
+    <div class="product">
+      <div class="product-media">
+        <img src="images/merch_tee_v5.webp" alt="Blood Orange Moon EP t-shirt" loading="lazy">
+      </div>
+      <div class="product-body">
+        <div class="product-name">EP T-Shirt</div>
+        <div class="product-desc">Heavyweight black tee, front print.</div>
+        <div class="product-price">200 DKK</div>
+
+        <div class="sizes" role="group" aria-label="Size">
+          <button type="button" class="size" data-url="https://buy.stripe.com/bJe7sL7uc58yepV4yh3840a">S</button>
+          <button type="button" class="size" data-url="https://buy.stripe.com/5kQ14n29S1WmdlR5Cl3840b">M</button>
+          <button type="button" class="size" data-url="https://buy.stripe.com/eVq00j15ObwW5Tp1m53840c">L</button>
+          <button type="button" class="size" data-url="">XL</button>
+        </div>
+
+        <a class="buy" data-url="">Coming soon</a>
+      </div>
+    </div>
+
+    <div class="product">
+      <div class="product-media">
+        <img src="images/merch_vinyl_v5.webp" alt="What Was Ever Real Might Be Fictitious on 12-inch vinyl" loading="lazy">
+      </div>
+      <div class="product-body">
+        <div class="product-name">EP on Vinyl</div>
+        <div class="product-desc"><i>What Was Ever Real Might Be Fictitious</i> &mdash; 12&quot;, limited run.</div>
+        <div class="product-price">250 DKK</div>
+
+        <a class="buy" data-url="">Coming soon</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="merch-note">
+    Shipping from Copenhagen &middot; worldwide.<br>
+    Questions about an order &mdash; <a href="mailto:hello@bloodorangemoon.com" style="color:#ff5a2c;text-decoration:none;">hello@bloodorangemoon.com</a>
+  </div>
+</section>
+
 <!-- CONTACT -->
 <section id="contact" class="section">
   <div class="email">hello@bloodorangemoon.com</div>
 
   <div class="socials">
-    <a href="https://www.youtube.com/@bloodorangemoon_official"><i class="fab fa-instagram"></i></a>
-    <a href="https://open.spotify.com/artist/2zACh7s1mDfLy2S5pzflnU?si=zBq-7KxSQ6COwlrP03tWlA"><i class="fab fa-spotify"></i></a>
-    <a href="https://www.instagram.com/bloodorangemoon_official"><i class="fab fa-youtube"></i></a>
+    <a href="https://www.instagram.com/bloodorangemoon_official" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+    <a href="https://open.spotify.com/artist/2zACh7s1mDfLy2S5pzflnU?si=zBq-7KxSQ6COwlrP03tWlA" aria-label="Spotify"><i class="fab fa-spotify"></i></a>
+    <a href="https://www.youtube.com/@bloodorangemoon_official?sub_confirmation=1" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
   </div>
 </section>
 
@@ -378,6 +604,48 @@ document.addEventListener("keydown", (e) => {
 });
 
 document.getElementById("year").textContent = new Date().getFullYear();
+
+
+// MERCH — size picker drives which Stripe payment link the button opens
+document.querySelectorAll(".product").forEach(card => {
+  const buy   = card.querySelector(".buy");
+  const pills = [...card.querySelectorAll(".size")];
+  if (!buy) return;
+
+  const set = (url, label) => {
+    buy.textContent = label;
+    if (url) {
+      buy.href = url;
+      buy.removeAttribute("aria-disabled");
+    } else {
+      buy.removeAttribute("href");
+      buy.setAttribute("aria-disabled", "true");
+    }
+  };
+
+  if (!pills.length) {                      // vinyl, tote — one link
+    set(buy.dataset.url, buy.dataset.url ? "Buy now" : "Coming soon");
+    return;
+  }
+
+  pills.forEach(p => {                      // a size with no link is sold out
+    if (!p.dataset.url) {
+      p.disabled = true;
+      p.title = "Sold out";
+    }
+  });
+
+  if (!pills.some(p => !p.disabled)) {
+    set(null, "Coming soon");
+    return;
+  }
+
+  set(null, "Select a size");
+  pills.forEach(p => p.addEventListener("click", () => {
+    pills.forEach(o => o.setAttribute("aria-pressed", o === p));
+    set(p.dataset.url, "Buy now");
+  }));
+});
 
 
 // 🔥 HERO SYSTEM
