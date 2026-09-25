@@ -1,2 +1,4 @@
 
-images/*
+images/merch_*
+!images/merch_tee_v5.webp
+!images/merch_vinyl_v19.webp

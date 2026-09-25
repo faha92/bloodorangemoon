@@ -696,20 +696,38 @@ const sequence = [heroImage, ...pool];
 
 const hero = document.querySelector(".hero");
 
-sequence.forEach((src, index) => {
+// Only the current and the next image are loaded — not all 107 at once
+const imgs = sequence.map((src, i) => {
   const img = document.createElement("img");
-  img.src = src;
-  if (index === 0) img.classList.add("active");
+  img.decoding = "async";
+  img.alt = "";
+  img.dataset.src = src;
+  if (i === 0) {
+    img.src = src;
+    img.fetchPriority = "high";
+    img.classList.add("active");
+  }
   hero.appendChild(img);
+  return img;
 });
 
-const imgs = document.querySelectorAll(".hero img");
-let current = 0;
+const load = i => {
+  const im = imgs[i];
+  if (!im.getAttribute("src")) im.src = im.dataset.src;
+};
 
+// Start preloading the next image once the page itself is done
+window.addEventListener("load", () => load(1));
+
+let current = 0;
 setInterval(() => {
+  const next = (current + 1) % imgs.length;
+  load(next);
+  if (!imgs[next].complete) return; // wait until it is ready
   imgs[current].classList.remove("active");
-  current = (current + 1) % imgs.length;
-  imgs[current].classList.add("active");
+  imgs[next].classList.add("active");
+  current = next;
+  load((next + 1) % imgs.length);
 }, 5000);
 
 </script>
